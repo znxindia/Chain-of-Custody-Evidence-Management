@@ -1,0 +1,2202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SecureLocker Pro — Chain of Custody Evidence Management System | Government of India</title>
+    <meta name="description" content="SecureLocker Pro is a comprehensive digital evidence management platform for law enforcement agencies, ensuring chain of custody integrity with cryptographic verification and real-time audit trails." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        /* ===================== CSS RESET & BASE ===================== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-deep: #060a14;
+            --bg-primary: #0a0e1a;
+            --bg-card: rgba(14, 22, 48, 0.55);
+            --bg-card-hover: rgba(20, 30, 65, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-border-hover: rgba(255, 153, 51, 0.3);
+            --saffron: #FF9933;
+            --saffron-dim: rgba(255, 153, 51, 0.15);
+            --green: #138808;
+            --green-dim: rgba(19, 136, 8, 0.15);
+            --white: #f0f0f5;
+            --muted: #8890a8;
+            --muted-dark: #4a5068;
+            --text-secondary: #b0b8d0;
+            --nav-height: 64px;
+            --tricolor-h: 4px;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-deep);
+            color: var(--white);
+            overflow-x: hidden;
+            line-height: 1.7;
+        }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Outfit', sans-serif; line-height: 1.2; }
+        a { text-decoration: none; color: inherit; transition: color 0.3s; }
+        img { max-width: 100%; display: block; }
+        ul { list-style: none; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-deep); }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 153, 51, 0.3); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--saffron); }
+
+        /* ===================== TRICOLOR BAR ===================== */
+        .tricolor-top {
+            height: var(--tricolor-h);
+            background: linear-gradient(90deg, var(--saffron) 0%, var(--saffron) 33.33%, #ffffff 33.33%, #ffffff 66.66%, var(--green) 66.66%, var(--green) 100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10001;
+        }
+
+        /* ===================== GOVERNMENT TOP BAR ===================== */
+        .gov-top-bar {
+            position: fixed;
+            top: var(--tricolor-h);
+            left: 0;
+            right: 0;
+            z-index: 10000;
+            background: rgba(6, 10, 20, 0.92);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-bottom: 1px solid var(--glass-border);
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            transition: background 0.3s;
+        }
+        .gov-top-bar .gov-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .gov-top-bar .gov-emblem {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--saffron-dim), var(--green-dim));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            border: 1px solid var(--glass-border);
+            flex-shrink: 0;
+        }
+        .gov-top-bar .gov-text {
+            font-size: 11px;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+        .gov-top-bar .gov-text strong {
+            color: var(--white);
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .gov-top-bar .gov-text .saff { color: var(--saffron); }
+        .gov-top-bar .gov-text .grn { color: var(--green); }
+        .gov-top-bar .hypersense-tag {
+            font-size: 10px;
+            color: var(--saffron);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: var(--saffron-dim);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 153, 51, 0.2);
+            white-space: nowrap;
+        }
+
+        /* ===================== MAIN NAV ===================== */
+        .main-nav {
+            position: fixed;
+            top: calc(var(--tricolor-h) + 56px);
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            background: rgba(6, 10, 20, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            height: var(--nav-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            transition: all 0.3s;
+        }
+        .main-nav.scrolled {
+            background: rgba(6, 10, 20, 0.96);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+        }
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 18px;
+            color: var(--white);
+        }
+        .nav-brand .brand-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--saffron), #e67e22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255, 153, 51, 0.3);
+        }
+        .nav-brand span { color: var(--saffron); }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .nav-links a {
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--muted);
+            border-radius: 8px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 2px;
+            background: var(--saffron);
+            border-radius: 1px;
+        }
+        .nav-cta {
+            padding: 8px 22px !important;
+            background: linear-gradient(135deg, var(--saffron), #e67e22) !important;
+            color: #fff !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            font-size: 13px !important;
+            box-shadow: 0 4px 15px rgba(255, 153, 51, 0.25);
+            transition: all 0.3s !important;
+        }
+        .nav-cta:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 25px rgba(255, 153, 51, 0.4) !important;
+        }
+        .hamburger-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 22px;
+            cursor: pointer;
+            padding: 6px;
+        }
+
+        /* Mobile Nav Overlay */
+        .mobile-nav-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 100002;
+            backdrop-filter: blur(4px);
+        }
+        .mobile-nav-overlay.show { display: block; }
+        .mobile-nav-panel {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100%;
+            background: rgba(10, 14, 26, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 100003;
+            padding: 24px;
+            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border-left: 1px solid var(--glass-border);
+            overflow-y: auto;
+        }
+        .mobile-nav-panel.open { right: 0; }
+        .mobile-nav-panel .close-btn {
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 24px;
+            cursor: pointer;
+            position: absolute;
+            top: 16px;
+            right: 16px;
+        }
+        .mobile-nav-panel .mobile-brand {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 20px;
+            margin-bottom: 30px;
+            padding-top: 10px;
+        }
+        .mobile-nav-panel .mobile-brand span { color: var(--saffron); }
+        .mobile-nav-panel a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            color: var(--muted);
+            font-size: 15px;
+            font-weight: 500;
+            border-radius: 10px;
+            transition: all 0.3s;
+            margin-bottom: 4px;
+        }
+        .mobile-nav-panel a:hover,
+        .mobile-nav-panel a.active {
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .mobile-nav-panel a i { width: 20px; text-align: center; color: var(--saffron); }
+        .mobile-nav-panel .mobile-cta {
+            margin-top: 20px;
+            display: block;
+            text-align: center;
+            background: linear-gradient(135deg, var(--saffron), #e67e22);
+            color: #fff !important;
+            padding: 14px !important;
+            border-radius: 10px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(255, 153, 51, 0.3);
+        }
+
+        /* ===================== SPACER ===================== */
+        .top-spacer {
+            height: calc(var(--tricolor-h) + 56px + var(--nav-height));
+        }
+
+        /* ===================== HERO SECTION ===================== */
+        .hero-section {
+            position: relative;
+            min-height: 92vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 24px 80px;
+            overflow: hidden;
+        }
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+        .hero-bg .gradient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.35;
+            animation: orbFloat 12s ease-in-out infinite;
+        }
+        .hero-bg .orb-1 {
+            width: 500px;
+            height: 500px;
+            background: var(--saffron);
+            top: -15%;
+            right: -10%;
+            animation-delay: 0s;
+        }
+        .hero-bg .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: var(--green);
+            bottom: -10%;
+            left: -8%;
+            animation-delay: -4s;
+        }
+        .hero-bg .orb-3 {
+            width: 300px;
+            height: 300px;
+            background: #1a3a6a;
+            top: 40%;
+            left: 40%;
+            animation-delay: -8s;
+        }
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -20px) scale(1.05); }
+            66% { transform: translate(-20px, 15px) scale(0.95); }
+        }
+        .hero-grid-overlay {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 1;
+        }
+        .hero-particles {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+        .hero-particles .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--saffron);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFade 6s ease-in-out infinite;
+        }
+        @keyframes particleFade {
+            0%, 100% { opacity: 0; transform: translateY(0); }
+            50% { opacity: 0.6; transform: translateY(-40px); }
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--saffron-dim);
+            border: 1px solid rgba(255, 153, 51, 0.2);
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--saffron);
+            margin-bottom: 28px;
+            animation: fadeSlideUp 0.8s ease both;
+        }
+        .hero-badge .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.5); }
+        }
+        .hero-title {
+            font-size: clamp(36px, 6vw, 72px);
+            font-weight: 900;
+            margin-bottom: 20px;
+            animation: fadeSlideUp 0.8s ease 0.15s both;
+            letter-spacing: -1px;
+        }
+        .hero-title .highlight {
+            background: linear-gradient(135deg, var(--saffron), #ffcc80);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-subtitle {
+            font-size: clamp(15px, 2vw, 19px);
+            color: var(--text-secondary);
+            max-width: 680px;
+            margin: 0 auto 40px;
+            font-weight: 300;
+            animation: fadeSlideUp 0.8s ease 0.3s both;
+        }
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeSlideUp 0.8s ease 0.45s both;
+        }
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, var(--saffron), #e67e22);
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 30px rgba(255, 153, 51, 0.3);
+            text-decoration: none;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(255, 153, 51, 0.45);
+        }
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--white);
+            font-family: 'Outfit', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        .hero-trust-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 50px;
+            animation: fadeSlideUp 0.8s ease 0.6s both;
+            flex-wrap: wrap;
+        }
+        .hero-trust-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--muted-dark);
+        }
+        .hero-trust-item i { color: var(--green); font-size: 14px; }
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===================== SECTION BASE ===================== */
+        .section {
+            padding: 100px 24px;
+            position: relative;
+        }
+        .section-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--saffron);
+            margin-bottom: 14px;
+        }
+        .section-label::before {
+            content: '';
+            width: 24px;
+            height: 2px;
+            background: var(--saffron);
+            border-radius: 1px;
+        }
+        .section-title {
+            font-size: clamp(28px, 4vw, 44px);
+            font-weight: 800;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+        .section-desc {
+            font-size: 16px;
+            color: var(--text-secondary);
+            max-width: 640px;
+            margin-bottom: 50px;
+            font-weight: 300;
+        }
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===================== GLASS CARD ===================== */
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 32px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+        }
+        .glass-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--glass-border-hover);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 40px rgba(255, 153, 51, 0.05);
+            background: var(--bg-card-hover);
+        }
+
+        /* ===================== ABOUT SECTION ===================== */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+        .about-visual {
+            position: relative;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .about-shield {
+            width: 200px;
+            height: 240px;
+            position: relative;
+        }
+        .about-shield .shield-body {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--saffron-dim), var(--green-dim));
+            clip-path: polygon(50% 0%, 100% 15%, 100% 70%, 50% 100%, 0% 70%, 0% 15%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            border: 1px solid var(--glass-border);
+            animation: shieldFloat 6s ease-in-out infinite;
+            position: relative;
+        }
+        .about-shield .shield-body::after {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            clip-path: polygon(50% 2%, 98% 16%, 98% 69%, 50% 98%, 2% 69%, 2% 16%);
+            background: rgba(10, 14, 26, 0.7);
+            z-index: -1;
+        }
+        @keyframes shieldFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+        .about-orbit {
+            position: absolute;
+            border: 1px dashed rgba(255, 153, 51, 0.15);
+            border-radius: 50%;
+            animation: orbitSpin 20s linear infinite;
+        }
+        .about-orbit-1 { width: 300px; height: 300px; }
+        .about-orbit-2 { width: 360px; height: 360px; animation-direction: reverse; animation-duration: 30s; border-color: rgba(19, 136, 8, 0.12); }
+        .about-orbit-dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            top: -4px;
+            left: 50%;
+            margin-left: -4px;
+        }
+        .about-orbit-dot.saffron { background: var(--saffron); box-shadow: 0 0 10px var(--saffron); }
+        .about-orbit-dot.green { background: var(--green); box-shadow: 0 0 10px var(--green); }
+        @keyframes orbitSpin { to { transform: rotate(360deg); } }
+        .about-text h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+        .about-text p {
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            font-size: 15px;
+        }
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 30px;
+        }
+        .about-stat-item {
+            text-align: center;
+            padding: 16px 8px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+        }
+        .about-stat-item .stat-num {
+            font-family: 'Outfit', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--saffron);
+        }
+        .about-stat-item .stat-label {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* ===================== FEATURES SECTION ===================== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        .feature-card .feature-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .feature-card .feature-icon.saffron-bg {
+            background: var(--saffron-dim);
+            color: var(--saffron);
+        }
+        .feature-card .feature-icon.green-bg {
+            background: var(--green-dim);
+            color: var(--green);
+        }
+        .feature-card .feature-icon.blue-bg {
+            background: rgba(52, 152, 219, 0.15);
+            color: #5dade2;
+        }
+        .feature-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        .feature-card .feature-tag {
+            display: inline-block;
+            margin-top: 16px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--saffron);
+            background: var(--saffron-dim);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        /* ===================== HOW IT WORKS ===================== */
+        .how-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            position: relative;
+        }
+        .how-grid::before {
+            content: '';
+            position: absolute;
+            top: 50px;
+            left: 12.5%;
+            right: 12.5%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--saffron), var(--green));
+            opacity: 0.3;
+            z-index: 0;
+        }
+        .how-card {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .how-step-num {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--saffron), #e67e22);
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 4px 20px rgba(255, 153, 51, 0.3);
+            position: relative;
+        }
+        .how-step-num::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 153, 51, 0.2);
+            animation: pulse 2.5s ease-in-out infinite;
+        }
+        .how-card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .how-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ===================== SECURITY SECTION ===================== */
+        .security-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+        .security-layers {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .security-layer {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            transition: all 0.3s;
+        }
+        .security-layer:hover {
+            border-color: var(--glass-border-hover);
+            transform: translateX(6px);
+        }
+        .security-layer .layer-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .security-layer h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .security-layer p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .security-visual-panel {
+            position: relative;
+            height: 480px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .lock-icon-3d {
+            width: 160px;
+            height: 160px;
+            background: linear-gradient(135deg, var(--saffron-dim), rgba(19, 136, 8, 0.1));
+            border-radius: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 72px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            animation: lockRotate 8s ease-in-out infinite;
+            position: relative;
+        }
+        @keyframes lockRotate {
+            0%, 100% { transform: perspective(600px) rotateY(0deg) rotateX(0deg); }
+            25% { transform: perspective(600px) rotateY(8deg) rotateX(4deg); }
+            75% { transform: perspective(600px) rotateY(-8deg) rotateX(-4deg); }
+        }
+        .sec-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid;
+            animation: ringPulse 4s ease-in-out infinite;
+        }
+        .sec-ring-1 { width: 240px; height: 240px; border-color: rgba(255, 153, 51, 0.12); }
+        .sec-ring-2 { width: 320px; height: 320px; border-color: rgba(19, 136, 8, 0.08); animation-delay: -2s; }
+        .sec-ring-3 { width: 400px; height: 400px; border-color: rgba(255, 255, 255, 0.04); animation-delay: -1s; }
+        @keyframes ringPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.5; }
+        }
+        .sec-float-badge {
+            position: absolute;
+            padding: 8px 16px;
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: badgeFloat 5s ease-in-out infinite;
+        }
+        .sec-float-badge.b1 { top: 40px; right: 20px; color: var(--saffron); }
+        .sec-float-badge.b2 { bottom: 60px; left: 10px; color: var(--green); animation-delay: -2.5s; }
+        .sec-float-badge.b3 { top: 120px; left: 0; color: #5dade2; animation-delay: -1.5s; }
+        @keyframes badgeFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* ===================== DEPARTMENTS SECTION ===================== */
+        .dept-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .dept-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 24px;
+        }
+        .dept-card .dept-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .dept-card .dept-icon.di-1 { background: var(--saffron-dim); }
+        .dept-card .dept-icon.di-2 { background: var(--green-dim); }
+        .dept-card .dept-icon.di-3 { background: rgba(52, 152, 219, 0.15); }
+        .dept-card h4 { font-size: 15px; font-weight: 700; }
+        .dept-card p { font-size: 12px; color: var(--muted); }
+
+        /* ===================== HELP & SUPPORT SECTION ===================== */
+        .help-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        .help-col h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .help-col h3 i { color: var(--saffron); }
+        .help-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        .help-link:hover {
+            border-color: var(--glass-border-hover);
+            background: var(--bg-card-hover);
+            color: var(--white);
+            transform: translateX(4px);
+        }
+        .help-link i.arrow { color: var(--muted-dark); transition: all 0.3s; }
+        .help-link:hover i.arrow { color: var(--saffron); transform: translateX(4px); }
+        .help-link i.link-icon { margin-right: 12px; color: var(--saffron); width: 18px; text-align: center; }
+
+        /* ===================== FAQ ACCORDION ===================== */
+        .faq-item {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+        .faq-item.open { border-color: var(--glass-border-hover); }
+        .faq-question {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 22px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--white);
+            transition: color 0.3s;
+            user-select: none;
+        }
+        .faq-question:hover { color: var(--saffron); }
+        .faq-question .faq-chevron {
+            transition: transform 0.3s;
+            color: var(--muted);
+            font-size: 12px;
+        }
+        .faq-item.open .faq-chevron { transform: rotate(180deg); color: var(--saffron); }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.3s;
+        }
+        .faq-item.open .faq-answer {
+            max-height: 300px;
+        }
+        .faq-answer-inner {
+            padding: 0 22px 18px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* ===================== TERMS SECTION ===================== */
+        .terms-content {
+            max-width: 800px;
+        }
+        .terms-content h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin: 28px 0 12px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .terms-content h3 .term-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: var(--saffron-dim);
+            color: var(--saffron);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+        .terms-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            padding-left: 36px;
+            line-height: 1.8;
+        }
+        .terms-content ul {
+            padding-left: 36px;
+            margin-bottom: 12px;
+        }
+        .terms-content ul li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 4px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        .terms-content ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 13px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--saffron);
+            opacity: 0.6;
+        }
+
+        /* ===================== CONTACT SECTION ===================== */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        .contact-info-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .contact-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 22px;
+        }
+        .contact-card .cc-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .contact-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+        .contact-card p { font-size: 13px; color: var(--text-secondary); }
+        .contact-card a { color: var(--saffron); }
+        .contact-card a:hover { text-decoration: underline; }
+        .contact-form-card {
+            padding: 32px;
+        }
+        .contact-form-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--white);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--saffron);
+            box-shadow: 0 0 0 3px rgba(255, 153, 51, 0.1);
+        }
+        .form-group textarea { min-height: 100px; resize: vertical; }
+        .form-group select option { background: var(--bg-primary); }
+        .form-submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--saffron), #e67e22);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .form-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 153, 51, 0.35);
+        }
+        .form-toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 14px 24px;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 99999;
+            transform: translateY(120px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(10px);
+            max-width: 380px;
+        }
+        .form-toast.show { transform: translateY(0); opacity: 1; }
+        .form-toast.success { background: rgba(19, 136, 8, 0.9); border: 1px solid rgba(19, 136, 8, 0.5); }
+        .form-toast.error { background: rgba(231, 76, 60, 0.9); border: 1px solid rgba(231, 76, 60, 0.5); }
+
+        /* ===================== FOOTER ===================== */
+        .gov-footer {
+            position: relative;
+            border-top: 1px solid var(--glass-border);
+        }
+        .footer-tricolor {
+            height: var(--tricolor-h);
+            background: linear-gradient(90deg, var(--saffron) 0%, var(--saffron) 33.33%, #ffffff 33.33%, #ffffff 66.66%, var(--green) 66.66%, var(--green) 100%);
+        }
+        .footer-main {
+            background: rgba(6, 10, 20, 0.95);
+            padding: 60px 24px 30px;
+        }
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        .footer-brand .fb-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+        .footer-brand .fb-name span { color: var(--saffron); }
+        .footer-brand p { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 16px; }
+        .footer-brand .fb-gov {
+            font-size: 11px;
+            color: var(--muted-dark);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .footer-col h4 {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--white);
+            margin-bottom: 18px;
+        }
+        .footer-col a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--muted);
+            padding: 6px 0;
+            transition: all 0.3s;
+        }
+        .footer-col a:hover { color: var(--saffron); transform: translateX(4px); }
+        .footer-col a i { font-size: 10px; color: var(--saffron); opacity: 0.6; }
+        .footer-bottom {
+            border-top: 1px solid var(--glass-border);
+            padding-top: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .footer-bottom p {
+            font-size: 12px;
+            color: var(--muted-dark);
+        }
+        .footer-bottom .hypersense-footer {
+            font-size: 12px;
+            color: var(--saffron);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ===================== SCROLL ANIMATIONS ===================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+        .reveal-delay-5 { transition-delay: 0.5s; }
+        .reveal-delay-6 { transition-delay: 0.6s; }
+
+        /* ===================== BACK TO TOP ===================== */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            color: var(--saffron);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s;
+            pointer-events: none;
+        }
+        .back-to-top.show { opacity: 1; transform: translateY(0); pointer-events: all; }
+        .back-to-top:hover { background: var(--saffron); color: #fff; border-color: var(--saffron); }
+
+        /* ===================== RESPONSIVE ===================== */
+        @media (max-width: 1024px) {
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .how-grid { grid-template-columns: repeat(2, 1fr); }
+            .how-grid::before { display: none; }
+            .dept-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hamburger-btn { display: block !important; }
+            .gov-top-bar .hypersense-tag { display: none; }
+            .about-grid { grid-template-columns: 1fr; }
+            .about-visual { height: 280px; }
+            .about-shield .shield-body { width: 140px; height: 170px; font-size: 44px; }
+            .about-orbit-1 { width: 220px; height: 220px; }
+            .about-orbit-2 { width: 260px; height: 260px; }
+            .features-grid { grid-template-columns: 1fr; }
+            .how-grid { grid-template-columns: 1fr; gap: 30px; }
+            .security-layout { grid-template-columns: 1fr; }
+            .security-visual-panel { height: 300px; }
+            .lock-icon-3d { width: 120px; height: 120px; font-size: 52px; border-radius: 24px; }
+            .sec-ring-1 { width: 180px; height: 180px; }
+            .sec-ring-2 { width: 240px; height: 240px; }
+            .sec-ring-3 { width: 280px; height: 280px; }
+            .sec-float-badge { font-size: 10px; padding: 6px 12px; }
+            .dept-grid { grid-template-columns: 1fr; }
+            .help-grid { grid-template-columns: 1fr; }
+            .contact-grid { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+            .section { padding: 70px 16px; }
+            .hero-section { min-height: 80vh; padding: 40px 16px 60px; }
+            .hero-trust-row { gap: 16px; }
+        }
+        @media (max-width: 480px) {
+            .gov-top-bar .gov-text { font-size: 9px; }
+            .gov-top-bar .gov-text strong { font-size: 10px; }
+            .about-stats { grid-template-columns: 1fr; }
+            .hero-actions { flex-direction: column; align-items: center; }
+            .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+        }
+
+        /* ===================== REDUCED MOTION ===================== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            html { scroll-behavior: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Tricolor Top Bar -->
+    <div class="tricolor-top" role="presentation"></div>
+
+    <!-- Government Header -->
+    <header class="gov-top-bar" role="banner">
+        <div class="gov-left">
+            <div class="gov-emblem" aria-hidden="true"><i class="fas fa-landmark"></i></div>
+            <div class="gov-text">
+                <strong>Government of India</strong><br />
+                <span class="saff">Ministry of Home Affairs</span> &bull; <span class="grn">Kerala Police</span>
+            </div>
+        </div>
+        <div class="hypersense-tag"><i class="fas fa-bolt"></i> HYPERSNSE INDIA</div>
+    </header>
+
+    <!-- Main Navigation -->
+    <nav class="main-nav" id="mainNav" role="navigation" aria-label="Main navigation">
+        <a href="#" class="nav-brand">
+            <div class="brand-icon"><i class="fas fa-shield-halved"></i></div>
+            Secure<span>Locker</span>
+        </a>
+        <div class="nav-links" id="navLinks">
+            <a href="#about" class="active">About</a>
+            <a href="#features">Features</a>
+            <a href="#how-it-works">Workflow</a>
+            <a href="#security">Security</a>
+            <a href="#help">Help</a>
+            <a href="#contact">Contact</a>
+            <a href="https://znxindia.github.io/SecureLockerPro/" class="nav-cta" target="_blank" rel="noopener">Launch System <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open menu"><i class="fas fa-bars"></i></button>
+    </nav>
+
+    <!-- Mobile Nav -->
+    <div class="mobile-nav-overlay" id="mobileOverlay"></div>
+    <div class="mobile-nav-panel" id="mobilePanel" role="dialog" aria-label="Mobile navigation">
+        <button class="close-btn" id="mobileCloseBtn" aria-label="Close menu"><i class="fas fa-times"></i></button>
+        <div class="mobile-brand">Secure<span>Locker</span> Pro</div>
+        <a href="#about" class="mobile-nav-link active"><i class="fas fa-info-circle"></i> About</a>
+        <a href="#features" class="mobile-nav-link"><i class="fas fa-cubes"></i> Features</a>
+        <a href="#how-it-works" class="mobile-nav-link"><i class="fas fa-route"></i> Workflow</a>
+        <a href="#security" class="mobile-nav-link"><i class="fas fa-lock"></i> Security</a>
+        <a href="#departments" class="mobile-nav-link"><i class="fas fa-building-columns"></i> Departments</a>
+        <a href="#help" class="mobile-nav-link"><i class="fas fa-circle-question"></i> Help</a>
+        <a href="#terms" class="mobile-nav-link"><i class="fas fa-file-contract"></i> Terms</a>
+        <a href="#contact" class="mobile-nav-link"><i class="fas fa-envelope"></i> Contact</a>
+        <a href="https://znxindia.github.io/SecureLockerPro/" class="mobile-cta" target="_blank" rel="noopener">Launch System <i class="fas fa-arrow-right"></i></a>
+    </div>
+
+    <!-- Spacer for fixed headers -->
+    <div class="top-spacer"></div>
+
+    <!-- ===================== HERO ===================== -->
+    <section class="hero-section" id="hero">
+        <div class="hero-bg" aria-hidden="true">
+            <div class="gradient-orb orb-1"></div>
+            <div class="gradient-orb orb-2"></div>
+            <div class="gradient-orb orb-3"></div>
+            <div class="hero-grid-overlay"></div>
+            <div class="hero-particles" id="heroParticles"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <div class="pulse-dot"></div>
+                Government of India — Certified Secure System
+            </div>
+            <h1 class="hero-title">
+                Chain of Custody<br /><span class="highlight">Evidence Management</span>
+            </h1>
+            <p class="hero-subtitle">
+                A comprehensive digital evidence management platform for law enforcement agencies. Secure, auditable, and built to maintain the integrity of every piece of evidence from collection to courtroom.
+            </p>
+            <div class="hero-actions">
+                <a href="https://znxindia.github.io/SecureLockerPro/" class="btn-primary" target="_blank" rel="noopener">
+                    <i class="fas fa-right-to-bracket"></i> Launch SecureLocker Pro
+                </a>
+                <a href="#about" class="btn-secondary">
+                    <i class="fas fa-play-circle"></i> Learn More
+                </a>
+            </div>
+            <div class="hero-trust-row">
+                <div class="hero-trust-item"><i class="fas fa-check-circle"></i> AES-256 Encryption</div>
+                <div class="hero-trust-item"><i class="fas fa-check-circle"></i> Cryptographic Hashing</div>
+                <div class="hero-trust-item"><i class="fas fa-check-circle"></i> Real-Time Audit Logs</div>
+                <div class="hero-trust-item"><i class="fas fa-check-circle"></i> Role-Based Access</div>
+                <div class="hero-trust-item"><i class="fas fa-check-circle"></i> Court Admissible</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ===================== ABOUT ===================== -->
+    <section class="section" id="about">
+        <div class="section-inner">
+            <div class="about-grid">
+                <div class="about-visual reveal" aria-hidden="true">
+                    <div class="about-shield">
+                        <div class="shield-body"><i class="fas fa-shield-halved" style="color: var(--saffron);"></i></div>
+                        <div class="about-orbit about-orbit-1">
+                            <div class="about-orbit-dot saffron"></div>
+                        </div>
+                        <div class="about-orbit about-orbit-2">
+                            <div class="about-orbit-dot green"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-text">
+                    <div class="section-label reveal">About the System</div>
+                    <h2 class="section-title reveal reveal-delay-1">Securing Digital Evidence for Modern Policing</h2>
+                    <p class="reveal reveal-delay-2">
+                        SecureLocker Pro is a sophisticated web-based application designed to revolutionize how law enforcement agencies manage digital evidence. It provides a secure, auditable, and user-friendly platform for handling sensitive case files, evidence documentation, and inter-departmental communication.
+                    </p>
+                    <p class="reveal reveal-delay-3">
+                        The system addresses the critical need for a controlled, transparent, and efficient evidence management workflow that maintains the integrity of digital evidence while ensuring proper chain of custody throughout the entire investigation process — from first response to courtroom presentation.
+                    </p>
+                    <div class="about-stats reveal reveal-delay-4">
+                        <div class="about-stat-item">
+                            <div class="stat-num" data-count="256">0</div>
+                            <div class="stat-label">Bit Encryption</div>
+                        </div>
+                        <div class="about-stat-item">
+                            <div class="stat-num" data-count="100">0</div>
+                            <div class="stat-label">% Audit Coverage</div>
+                        </div>
+                        <div class="about-stat-item">
+                            <div class="stat-num" data-count="24">0</div>
+                            <div class="stat-label">/7 Real-Time Sync</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ===================== FEATURES ===================== -->
+    <section class="section" id="features">
+        <div class="section-inner">
+            <div class="section-label reveal">Core Capabilities</div>
+            <h2 class="section-title reveal reveal-delay-1">Built for the Demands of Law Enforcement</h2>
+            <p class="section-desc reveal reveal-delay-2">Every feature is engineered to meet the stringent requirements of digital evidence management, ensuring forensic validity and legal admissibility.</p>
+            <div class="features-grid">
+                <div class="glass-card feature-card reveal reveal-delay-1">
+                    <div class="feature-icon saffron-bg"><i class="fas fa-link"></i></div>
+                    <h3>Chain of Custody</h3>
+                    <p>Complete, unbroken chain of custody tracking for every evidence item. Every access, transfer, and viewing is documented with timestamps, user identity, and justification.</p>
+                    <span class="feature-tag">Tamper-Evident</span>
+                </div>
+                <div class="glass-card feature-card reveal reveal-delay-2">
+                    <div class="feature-icon green-bg"><i class="fas fa-clipboard-list"></i></div>
+                    <h3>Comprehensive Audit Trail</h3>
+                    <p>Every user action generates a logged entry capturing who performed it, when, what operation, and relevant details. Logs are tamper-evident and support internal and external audits.</p>
+                    <span class="feature-tag">Forensic-Grade</span>
+                </div>
+                <div class="glass-card feature-card reveal reveal-delay-3">
+                    <div class="feature-icon blue-bg"><i class="fas fa-bolt"></i></div>
+                    <h3>Real-Time Synchronization</h3>
+                    <p>All users work with the most current information. Changes propagate instantly to all connected clients, eliminating delays in collaborative case management workflows.</p>
+                    <span class="feature-tag">Zero Latency</span>
+                </div>
+                <div class="glass-card feature-card reveal reveal-delay-4">
+                    <div class="feature-icon saffron-bg"><i class="fas fa-fingerprint"></i></div>
+                    <h3>Cryptographic Verification</h3>
+                    <p>Each evidence file undergoes cryptographic hashing to generate a unique digital fingerprint. Verify at any point that files remain unaltered throughout their lifecycle.</p>
+                    <span class="feature-tag">SHA-256 Hashing</span>
+                </div>
+                <div class="glass-card feature-card reveal reveal-delay-5">
+                    <div class="feature-icon green-bg"><i class="fas fa-user-shield"></i></div>
+                    <h3>Role-Based Access Control</h3>
+                    <p>Dual-permission system requires both administrative approval for specific evidence and active system-wide permissions. Layered security prevents unauthorized exposure.</p>
+                    <span class="feature-tag">Multi-Layer</span>
+                </div>
+                <div class="glass-card feature-card reveal reveal-delay-6">
+                    <div class="feature-icon blue-bg"><i class="fas fa-comments"></i></div>
+                    <h3>Secure Communication</h3>
+                    <p>Integrated chat system enables direct communication between investigators and administrators. Controlled participation with enable/disable controls maintains operational security.</p>
+                    <span class="feature-tag">End-to-End</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ===================== HOW IT WORKS ===================== -->
+    <section class="section" id="how-it-works">
+        <div class="section-inner">
+            <div class="section-label reveal">System Workflow</div>
+            <h2 class="section-title reveal reveal-delay-1">How SecureLocker Pro Works</h2>
+            <p class="section-desc reveal reveal-delay-2">A structured four-step process ensures that every piece of evidence is handled with the highest standards of security and accountability.</p>
+            <div class="how-grid">
+                <div class="how-card reveal reveal-delay-1">
+                    <div class="how-step-num">1</div>
+                    <h3>Register and Verify</h3>
+                    <p>Personnel complete a detailed registration capturing credentials, rank, wing, and department. Access requires admin vetting and approval.</p>
+                </div>
+                <div class="how-card reveal reveal-delay-2">
+                    <div class="how-step-num">2</div>
+                    <h3>Browse and Discover</h3>
+                    <p>Approved users can browse active cases and evidence metadata to identify relevant materials for their ongoing investigations.</p>
+                </div>
+                <div class="how-card reveal reveal-delay-3">
+                    <div class="how-step-num">3</div>
+                    <h3>Request Access</h3>
+                    <p>Submit formal access requests with detailed justification. Each request creates a clear audit trail documenting the investigative necessity.</p>
+                </div>
+                <div class="how-card reveal reveal-delay-4">
+                    <div class="how-step-num">4</div>
+                    <h3>Preview and Analyze</h3>
+                    <p>Upon approval, preview evidence directly in the browser — documents, images, videos, and PDFs — without local downloads.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ===================== SECURITY ===================== -->
+    <section class="section" id="security">
+        <div class="section-inner">
+            <div class="section-label reveal">Security Architecture</div>
+            <h2 class="section-title reveal reveal-delay-1">Defense in Depth</h2>
+            <p class="section-desc reveal reveal-delay-2">Multiple layers of security work together to create an impenetrable fortress around your digital evidence.</p>
+            <div class="security-layout">
+                <div class="security-layers">
+                    <div class="security-layer reveal reveal-delay-1">
+                        <div class="layer-icon saffron-bg"><i class="fas fa-key"></i></div>
+                        <div>
+                            <h4>Encrypted Data Transmission</h4>
+                            <p>All data in transit is encrypted using TLS/SSL protocols, preventing interception or man-in-the-middle attacks on evidence data.</p>
+                        </div>
+                    </div>
+                    <div class="security-layer reveal reveal-delay-2">
+                        <div class="layer-icon green-bg"><i class="fas fa-user-lock"></i></div>
+                        <div>
+                            <h4>Session Management</h4>
+                            <p>Secure session tokens with controlled expiration. Automatic invalidation on logout or suspicious activity detection.</p>
+                        </div>
+                    </div>
+                    <div class="security-layer reveal reveal-delay-3">
+                        <div class="layer-icon blue-bg"><i class="fas fa-file-shield"></i></div>
+                        <div>
+                            <h4>File-Level Encryption</h4>
+                            <p>Optional file encryption provides an additional security layer for particularly sensitive materials beyond transport encryption.</p>
+                        </div>
+                    </div>
+                    <div class="security-layer reveal reveal-delay-4">
+                        <div class="layer-icon saffron-bg"><i class="fas fa-hash"></i></div>
+                        <div>
+                            <h4>Integrity Verification</h4>
+                            <p>Cryptographic hashing generates unique digital fingerprints for every file, enabling tamper detection at any point in the evidence lifecycle.</p>
+                        </div>
+                    </div>
+                    <div class="security-layer reveal reveal-delay-5">
+                        <div class="layer-icon green-bg"><i class="fas fa-gavel"></i></div>
+                        <div>
+                            <h4>Court Admissibility</h4>
+                            <p>All metadata — upload timestamps, uploader identification, verification status, and hash values — is maintained to support forensic validity.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="security-visual-panel reveal reveal-delay-2" aria-hidden="true">
+                    <div class="sec-ring sec-ring-1"></div>
+                    <div class="sec-ring sec-ring-2"></div>
+                    <div class="sec-ring sec-ring-3"></div>
+                    <div class="lock-icon-3d"><i class="fas fa-lock" style="color: var(--saffron);"></i></div>
+                    <div class="sec-float-badge b1"><i class="fas fa-shield-halved"></i> AES-256</div>
+                    <div class="sec-float-badge b2"><i class="fas fa-fingerprint"></i> SHA-256</div>
+                    <div class="sec-float-badge b3"><i class="fas fa-certificate"></i> TLS 1.3</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ===================== DEPARTMENTS ===================== -->
+    <section class="section" id="departments">
+        <div class="section-inner">
+            <div class="section-label reveal">Integration Scope</div>
+            <h2 class="section-title reveal reveal-delay-1">Departments Served</h2>
+            <p class="section-desc reveal reveal-delay-2">SecureLocker Pro is designed for deployment across diverse law enforcement environments — from individual police stations to state-wide networks.</p>
+            <div class="dept-grid">
+                <div class="glass-card dept-card reveal reveal-delay-1">
+                    <div class="dept-icon di-1"><i class="fas fa-building-shield"></i></div>
+                    <div><h4>Kerala Police</h4><p>State Police Headquarters & District Units</p></div>
+                </div>
+                <div class="glass-card dept-card reveal reveal-delay-2">
+                    <div class="dept-icon di-2"><i class="fas fa-magnifying-glass"></i></div>
+                    <div><h4>Central Bureau of Investigation</h4><p>CBI — National Level Investigations</p></div>
+                </div>
+                <div class="glass-card dept-card reveal reveal-delay-3">
+                    <div class="dept-icon di-3"><i class="fas fa-eye"></i></div>
+                    <div><h4>Intelligence Bureau</h4><p>IB — Internal Security Intelligence</p></div>
+                </div>
+                <div class="glass-card dept-card reveal reveal-delay-4">
+                    <div class="dept-icon di-1"><i class="fas fa-explosion"></i></div>
+                    <div><h4>National Investigation Agency</h4><p>NIA — Terror & National Security Cases</p></div>
+                </div>
+                <div class="glass-card dept-card reveal reveal-delay-5">
+                    <div class="dept-icon di-2"><i class="fas fa-coins"></i></div>
+                    <div><h4>Enforcement Directorate</h4><p>ED — Financial Crime & Money Laundering</p></div>
+                </div>
+                <div class="glass-card dept-card reveal reveal-delay-6">
+                    <div class="dept-icon di-3"><i class="fas fa-pills"></i></div>
+                    <div><h4>Narcotics Control Bureau</h4><p>NCB — Drug Trafficking Investigations</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ===================== HELP & SUPPORT ===================== -->
+    <section class="section" id="help">
+        <div class="section-inner">
+            <div class="section-label reveal">Assistance</div>
+            <h2 class="section-title reveal reveal-delay-1">Help & Support</h2>
+            <p class="section-desc reveal reveal-delay-2">Find answers to common questions, get in touch with our team, or access important policy documents.</p>
+            <div class="help-grid">
+                <div class="help-col reveal reveal-delay-1">
+                    <h3><i class="fas fa-circle-question"></i> Help & Support</h3>
+                    <div class="help-link" onclick="scrollToSection('contact')">
+                        <span><i class="fas fa-comment-dots link-icon"></i> Feedback</span>
+                        <i class="fas fa-chevron-right arrow"></i>
+                    </div>
+                    <div class="help-link" onclick="scrollToSection('contact')">
+                        <span><i class="fas fa-envelope link-icon"></i> Contact Us</span>
+                        <i class="fas fa-chevron-right arrow"></i>
+                    </div>
+                    <div class="help-link" onclick="toggleAllFaqs()">
+                        <span><i class="fas fa-circle-info link-icon"></i> FAQ</span>
+                        <i class="fas fa-chevron-right arrow"></i>
+                    </div>
+                </div>
+                <div class="help-col reveal reveal-delay-2">
+                    <h3><i class="fas fa-file-lines"></i> Information</h3>
+                    <div class="help-link" onclick="scrollToSection('terms')">
+                        <span><i class="fas fa-globe link-icon"></i> Website Policies</span>
+                        <i class="fas fa-chevron-right arrow"></i>
+                    </div>
+                    <div class="help-link" onclick="scrollToSection('terms')">
+                        <span><i class="fas fa-user-shield link-icon"></i> Privacy Policy</span>
+                        <i class="fas fa-chevron-right arrow"></i>
+                    </div>
+                    <div class="help-link" onclick="scrollToSection('terms')">
+                        <span><i class="fas fa-triangle-exclamation link-icon"></i> Disclaimer</span>
+                        <i class="fas fa-chevron-right arrow"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ Accordion -->
+            <div style="max-width: 800px; margin-top: 50px;" class="reveal reveal-delay-3">
+                <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-messages-question" style="color: var(--saffron);"></i> Frequently Asked Questions
+                </h3>
+                <div class="faq-item" data-faq>
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        Who can access SecureLocker Pro?
+                        <i class="fas fa-chevron-down faq-chevron"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">Access is restricted to authorized law enforcement personnel only. Users must register with valid professional credentials including name, rank, wing, department, and police station. All registrations require administrative approval before system access is granted.</div>
+                    </div>
+                </div>
+                <div class="faq-item" data-faq>
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        How is evidence integrity maintained?
+                        <i class="fas fa-chevron-down faq-chevron"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">Every evidence file undergoes cryptographic hashing (SHA-256) upon upload, creating a unique digital fingerprint. This hash is stored alongside the file metadata and can be verified at any point to confirm the file has not been tampered with. Optional file encryption adds another layer of protection.</div>
+                    </div>
+                </div>
+                <div class="faq-item" data-faq>
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        Can evidence be downloaded from the system?
+                        <i class="fas fa-chevron-down faq-chevron"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">No. Evidence can only be previewed within the secure browser environment. The system explicitly prevents downloading or local storage of evidence files. This ensures that sensitive materials never leave the controlled environment, maintaining chain of custody integrity.</div>
+                    </div>
+                </div>
+                <div class="faq-item" data-faq>
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        What file formats are supported for preview?
+                        <i class="fas fa-chevron-down faq-chevron"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">The system supports in-browser preview of documents, images (JPEG, PNG, WEBP, etc.), videos (MP4, WEBM, etc.), and PDF files. All previewing happens within the secured browser context with no local file creation.</div>
+                    </div>
+                </div>
+                <div class="faq-item" data-faq>
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        How do I request access to specific evidence?
+                        <i class="fas fa-chevron-down faq-chevron"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">Navigate to the Evidence section, identify the file you need, and click "Request Access." You will need to provide your contact information and a detailed justification explaining the investigative necessity. The request enters an approval queue for administrator review.</div>
+                    </div>
+                </div>
+                <div class="faq-item" data-faq>
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        Is the system suitable for court proceedings?
+                        <i class="fas fa-chevron-down faq-chevron"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">Yes. SecureLocker Pro is designed with court admissibility in mind. Comprehensive audit trails, cryptographic integrity verification, chain of custody documentation, and access logging provide the forensic foundation required for legal proceedings.</div>
+                    </div>
+                </div>
+                <div class="faq-item" data-faq>
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        What happens if I forget my password?
+                        <i class="fas fa-chevron-down faq-chevron"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">Use the password reset functionality provided on the login screen. If you continue to experience issues, contact your system administrator or reach out to Hypersense India support at znxindia@gmail.com or call +91 79077 32135 for assistance.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ===================== TERMS & CONDITIONS ===================== -->
+    <section class="section" id="terms">
+        <div class="section-inner">
+            <div class="section-label reveal">Legal</div>
+            <h2 class="section-title reveal reveal-delay-1">Terms, Privacy & Disclaimer</h2>
+            <p class="section-desc reveal reveal-delay-2">Please read these terms carefully before using the SecureLocker Pro system.</p>
+            <div class="terms-content reveal reveal-delay-3">
+                <h3><span class="term-num">1</span> Website Policies</h3>
+                <p>This website is the official informational portal for SecureLocker Pro, a Chain of Custody Evidence Management System developed by Hypersense India Technologies for use by authorized law enforcement agencies under the Government of India. The content on this website is provided for informational purposes only and does not constitute a binding legal agreement.</p>
+                <p>Unauthorized attempts to access the SecureLocker Pro application system, its databases, or any connected infrastructure are strictly prohibited and may result in legal action under the Information Technology Act, 2000, and other applicable laws of India.</p>
+
+                <h3><span class="term-num">2</span> Privacy Policy</h3>
+                <p>SecureLocker Pro collects and processes only the minimum personal information necessary for law enforcement operations, including:</p>
+                <ul>
+                    <li>Full name, rank, wing, and department affiliation of registered personnel</li>
+                    <li>Email address and phone number for communication and authentication purposes</li>
+                    <li>Assigned police station and organizational identification details</li>
+                    <li>System interaction logs including login times, evidence access requests, and activity history</li>
+                </ul>
+                <p>All personal data is stored in encrypted databases with access restricted to authorized administrators. Data is retained only for the duration necessary to fulfill operational and legal requirements. No personal data is shared with third parties except as required by law or for the explicit purpose of law enforcement operations.</p>
+                <p>Users may request deletion of their account by contacting the system administrator. However, audit logs pertaining to the user's activities are retained permanently as part of the chain of custody record and cannot be deleted.</p>
+
+                <h3><span class="term-num">3</span> Disclaimer</h3>
+                <p>While every effort is made to ensure the accuracy, security, and reliability of the SecureLocker Pro system, the developers, Hypersense India Technologies, and the Government of India make no warranties, expressed or implied, regarding the system's uninterrupted or error-free operation.</p>
+                <p>The system is provided "as is" without any guarantee of completeness, timeliness, or fitness for a particular purpose beyond its designed function as an evidence management tool. Users are responsible for verifying evidence integrity through the provided cryptographic verification tools before relying on it for legal proceedings.</p>
+                <p>Under no circumstances shall Hypersense India Technologies, its directors, employees, or the Government of India be held liable for any direct, indirect, incidental, consequential, or special damages arising out of or in connection with the use of this system, including but not limited to the loss or corruption of evidence data.</p>
+                <p>The tricolor emblem, Government of India branding, and Kerala Police references used on this website are official identifiers used in accordance with government guidelines for authorized digital systems. Unauthorized reproduction or misuse of these identifiers is prohibited.</p>
+
+                <h3><span class="term-num">4</span> Acceptable Use</h3>
+                <ul>
+                    <li>Users must not share their login credentials with any other person</li>
+                    <li>Users must not attempt to bypass access controls or authorization mechanisms</li>
+                    <li>Users must not attempt to download, copy, or photograph evidence displayed in the preview system</li>
+                    <li>Users must report any suspected security vulnerabilities to the system administrator immediately</li>
+                    <li>All access requests must include truthful and accurate justifications</li>
+                    <li>Users must comply with all applicable laws, rules, and departmental regulations</li>
+                </ul>
+
+                <h3><span class="term-num">5</span> Governing Law</h3>
+                <p>These terms are governed by and construed in accordance with the laws of the Republic of India. Any disputes arising out of or in connection with these terms shall be subject to the exclusive jurisdiction of the courts of Ernakulam, Kerala, India.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ===================== CONTACT ===================== -->
+    <section class="section" id="contact">
+        <div class="section-inner">
+            <div class="section-label reveal">Get in Touch</div>
+            <h2 class="section-title reveal reveal-delay-1">Contact Us</h2>
+            <p class="section-desc reveal reveal-delay-2">For technical support, partnership inquiries, or system access requests, reach out to the SecureLocker Pro team.</p>
+            <div class="contact-grid">
+                <div class="contact-info-cards">
+                    <div class="glass-card contact-card reveal reveal-delay-1">
+                        <div class="cc-icon saffron-bg"><i class="fas fa-building"></i></div>
+                        <div>
+                            <h4>Office Address</h4>
+                            <p>Hypersense India Technologies<br />Angamaly, Ernakulam District<br />Kerala, India</p>
+                        </div>
+                    </div>
+                    <div class="glass-card contact-card reveal reveal-delay-2">
+                        <div class="cc-icon green-bg"><i class="fas fa-envelope"></i></div>
+                        <div>
+                            <h4>Email</h4>
+                            <p><a href="mailto:znxindia@gmail.com">znxindia@gmail.com</a></p>
+                            <p style="font-size: 11px; color: var(--muted-dark); margin-top: 4px;">For support, partnerships, and general inquiries</p>
+                        </div>
+                    </div>
+                    <div class="glass-card contact-card reveal reveal-delay-3">
+                        <div class="cc-icon blue-bg"><i class="fas fa-phone"></i></div>
+                        <div>
+                            <h4>Phone</h4>
+                            <p><a href="tel:+917907732135">+91 79077 32135</a></p>
+                            <p style="font-size: 11px; color: var(--muted-dark); margin-top: 4px;">Mon — Sat, 9:00 AM — 6:00 PM IST</p>
+                        </div>
+                    </div>
+                    <div class="glass-card contact-card reveal reveal-delay-4">
+                        <div class="cc-icon saffron-bg"><i class="fas fa-globe"></i></div>
+                        <div>
+                            <h4>System Portal</h4>
+                            <p><a href="https://znxindia.github.io/SecureLockerPro/" target="_blank" rel="noopener">znxindia.github.io/SecureLockerPro</a></p>
+                            <p style="font-size: 11px; color: var(--muted-dark); margin-top: 4px;">Authorized personnel only</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card contact-form-card reveal reveal-delay-3">
+                    <h3><i class="fas fa-paper-plane" style="color: var(--saffron); margin-right: 8px;"></i>Send a Message</h3>
+                    <form id="contactForm" onsubmit="handleContactSubmit(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="cfName">Full Name</label>
+                                <input type="text" id="cfName" placeholder="Your full name" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="cfEmail">Email</label>
+                                <input type="email" id="cfEmail" placeholder="your@email.com" required />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="cfSubject">Subject</label>
+                            <select id="cfSubject" required>
+                                <option value="">Select a subject...</option>
+                                <option value="access">System Access Request</option>
+                                <option value="support">Technical Support</option>
+                                <option value="partnership">Partnership Inquiry</option>
+                                <option value="bug">Bug Report</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cfMessage">Message</label>
+                            <textarea id="cfMessage" placeholder="Describe your inquiry in detail..." required></textarea>
+                        </div>
+                        <button type="submit" class="form-submit-btn" id="cfSubmitBtn">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="gov-footer" role="contentinfo">
+        <div class="footer-tricolor"></div>
+        <div class="footer-main">
+            <div class="footer-inner">
+                <div class="footer-grid">
+                    <div class="footer-brand">
+                        <div class="fb-name"><i class="fas fa-shield-halved" style="color: var(--saffron); margin-right: 6px;"></i> Secure<span>Locker</span> Pro</div>
+                        <p>A comprehensive Chain of Custody Evidence Management System designed for law enforcement agencies under the Government of India. Built with security, transparency, and accountability at its core.</p>
+                        <div class="fb-gov">
+                            <i class="fas fa-landmark" style="color: var(--saffron);"></i>
+                            Government of India — Ministry of Home Affairs — Kerala Police
+                        </div>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Quick Links</h4>
+                        <a href="#about"><i class="fas fa-chevron-right"></i> About System</a>
+                        <a href="#features"><i class="fas fa-chevron-right"></i> Features</a>
+                        <a href="#how-it-works"><i class="fas fa-chevron-right"></i> Workflow</a>
+                        <a href="#security"><i class="fas fa-chevron-right"></i> Security</a>
+                        <a href="#departments"><i class="fas fa-chevron-right"></i> Departments</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Support</h4>
+                        <a href="#help"><i class="fas fa-chevron-right"></i> Help Center</a>
+                        <a href="#help"><i class="fas fa-chevron-right"></i> FAQ</a>
+                        <a href="#contact"><i class="fas fa-chevron-right"></i> Contact Us</a>
+                        <a href="#terms"><i class="fas fa-chevron-right"></i> Terms & Conditions</a>
+                        <a href="#terms"><i class="fas fa-chevron-right"></i> Privacy Policy</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Contact</h4>
+                        <a href="mailto:znxindia@gmail.com"><i class="fas fa-envelope"></i> znxindia@gmail.com</a>
+                        <a href="tel:+917907732135"><i class="fas fa-phone"></i> +91 79077 32135</a>
+                        <a href="https://znxindia.github.io/SecureLockerPro/" target="_blank" rel="noopener"><i class="fas fa-globe"></i> System Portal</a>
+                        <a href="#"><i class="fas fa-location-dot"></i> Angamaly, Kerala</a>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 SecureLocker Pro. All rights reserved. | Government of India</p>
+                    <div class="hypersense-footer">
+                        <i class="fas fa-bolt"></i> Powered by Hypersense India Technologies
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+
+    <!-- Form Toast -->
+    <div class="form-toast" id="formToast"></div>
+
+    <script>
+        // =============================================
+        // HERO PARTICLES
+        // =============================================
+        (function createParticles() {
+            const container = document.getElementById('heroParticles');
+            if (!container) return;
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particle');
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                p.style.animationDelay = (Math.random() * 6) + 's';
+                p.style.animationDuration = (4 + Math.random() * 4) + 's';
+                if (Math.random() > 0.5) p.style.background = 'var(--green)';
+                container.appendChild(p);
+            }
+        })();
+
+        // =============================================
+        // NAVBAR SCROLL EFFECT
+        // =============================================
+        const mainNav = document.getElementById('mainNav');
+        const backToTopBtn = document.getElementById('backToTop');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 80) {
+                mainNav.classList.add('scrolled');
+            } else {
+                mainNav.classList.remove('scrolled');
+            }
+            if (window.scrollY > 500) {
+                backToTopBtn.classList.add('show');
+            } else {
+                backToTopBtn.classList.remove('show');
+            }
+            updateActiveNav();
+        }, { passive: true });
+
+        backToTopBtn.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // =============================================
+        // ACTIVE NAV LINK TRACKING
+        // =============================================
+        function updateActiveNav() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-links a:not(.nav-cta)');
+            const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+            let current = '';
+            sections.forEach(function(sec) {
+                const top = sec.offsetTop - 200;
+                if (window.scrollY >= top) {
+                    current = sec.getAttribute('id');
+                }
+            });
+            navLinks.forEach(function(link) {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+            mobileLinks.forEach(function(link) {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // =============================================
+        // MOBILE NAV
+        // =============================================
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+        const mobilePanel = document.getElementById('mobilePanel');
+        const mobileCloseBtn = document.getElementById('mobileCloseBtn');
+
+        function openMobileNav() {
+            mobileOverlay.classList.add('show');
+            mobilePanel.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeMobileNav() {
+            mobileOverlay.classList.remove('show');
+            mobilePanel.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        hamburgerBtn.addEventListener('click', openMobileNav);
+        mobileCloseBtn.addEventListener('click', closeMobileNav);
+        mobileOverlay.addEventListener('click', closeMobileNav);
+        document.querySelectorAll('.mobile-nav-link, .mobile-cta').forEach(function(link) {
+            link.addEventListener('click', closeMobileNav);
+        });
+
+        // =============================================
+        // SCROLL TO SECTION HELPER
+        // =============================================
+        function scrollToSection(id) {
+            var el = document.getElementById(id);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // =============================================
+        // SCROLL REVEAL (IntersectionObserver)
+        // =============================================
+        var revealElements = document.querySelectorAll('.reveal');
+        var revealObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+        revealElements.forEach(function(el) { revealObserver.observe(el); });
+
+        // =============================================
+        // ANIMATED COUNTER
+        // =============================================
+        var counterElements = document.querySelectorAll('.stat-num[data-count]');
+        var counterObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting && !entry.target.dataset.animated) {
+                    entry.target.dataset.animated = 'true';
+                    animateCounter(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        counterElements.forEach(function(el) { counterObserver.observe(el); });
+
+        function animateCounter(el) {
+            var target = parseInt(el.dataset.count);
+            var duration = 1500;
+            var start = 0;
+            var startTime = null;
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                var progress = Math.min((timestamp - startTime) / duration, 1);
+                var eased = 1 - Math.pow(1 - progress, 3);
+                el.textContent = Math.floor(eased * target);
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    el.textContent = target;
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        // =============================================
+        // FAQ ACCORDION
+        // =============================================
+        function toggleFaq(questionEl) {
+            var item = questionEl.parentElement;
+            var wasOpen = item.classList.contains('open');
+            // Close all
+            document.querySelectorAll('.faq-item').forEach(function(faq) {
+                faq.classList.remove('open');
+            });
+            // Toggle clicked
+            if (!wasOpen) {
+                item.classList.add('open');
+            }
+        }
+        function toggleAllFaqs() {
+            var allItems = document.querySelectorAll('.faq-item');
+            var allOpen = true;
+            allItems.forEach(function(faq) {
+                if (!faq.classList.contains('open')) allOpen = false;
+            });
+            allItems.forEach(function(faq) {
+                if (allOpen) {
+                    faq.classList.remove('open');
+                } else {
+                    faq.classList.add('open');
+                }
+            });
+            // Scroll to first FAQ
+            var firstFaq = document.querySelector('.faq-item');
+            if (firstFaq) {
+                setTimeout(function() {
+                    firstFaq.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            }
+        }
+
+        // =============================================
+        // CONTACT FORM
+        // =============================================
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            var name = document.getElementById('cfName').value.trim();
+            var email = document.getElementById('cfEmail').value.trim();
+            var subject = document.getElementById('cfSubject').value;
+            var message = document.getElementById('cfMessage').value.trim();
+
+            if (!name || !email || !subject || !message) {
+                showFormToast('Please fill in all required fields.', 'error');
+                return;
+            }
+            if (!email.includes('@') || !email.includes('.')) {
+                showFormToast('Please enter a valid email address.', 'error');
+                return;
+            }
+
+            var btn = document.getElementById('cfSubmitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+            // Simulate sending (no backend on landing page)
+            setTimeout(function() {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
+                document.getElementById('contactForm').reset();
+                showFormToast('Message sent successfully! We will respond within 24 hours.', 'success');
+            }, 1800);
+        }
+
+        function showFormToast(msg, type) {
+            var toast = document.getElementById('formToast');
+            toast.textContent = msg;
+            toast.className = 'form-toast ' + type;
+            // Force reflow
+            void toast.offsetWidth;
+            toast.classList.add('show');
+            clearTimeout(toast._hideTimer);
+            toast._hideTimer = setTimeout(function() {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        // =============================================
+        // SMOOTH SCROLL FOR NAV LINKS
+        // =============================================
+        document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+            anchor.addEventListener('click', function(e) {
+                var targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                var target = document.querySelector(targetId);
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
