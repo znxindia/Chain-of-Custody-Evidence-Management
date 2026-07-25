@@ -74,6 +74,8 @@ Chain-of-Custody-Evidence-Management/
 └── LICENSE # MIT License
 
 ---
+<img width="1906" height="888" alt="image" src="https://github.com/user-attachments/assets/700d939d-b3b4-4524-a8f2-7ab30e536f36" />
+
 
 ## 🚀 Deployment
 
